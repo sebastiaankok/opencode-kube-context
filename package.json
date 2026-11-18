@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "opencode-kube-context",
+  "version": "0.1.0",
+  "description": "Live kubectl context in your OpenCode TUI footer \u2014 colour-coded for prod and staging.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Sebastiaan Kok",
+  "homepage": "https://github.com/sebastiaankok/opencode-kube-context#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastiaankok/opencode-kube-context.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sebastiaankok/opencode-kube-context/issues"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "kubernetes",
+    "kubectl",
+    "kubeconfig",
+    "tui",
+    "statusline"
+  ],
+  "exports": {
+    "./tui": "./src/tui.tsx"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run typecheck",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "peerDependencies": {
+    "@opencode/plugin": ">=2.0.0 <3",
+    "@opentui/core": ">=0.6.0",
+    "@opentui/solid": ">=0.6.0",
+    "solid-js": ">=1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@opencode/plugin": {
+      "optional": true
+    },
+    "@opentui/core": {
+      "optional": true
+    },
+    "@opentui/solid": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@opencode/plugin": "^2.2.5",
+    "@opentui/core": "^0.8.0",
+    "@opentui/solid": "^0.8.0",
+    "@types/node": "^24.0.0",
+    "solid-js": "^1.9.0",
+    "typescript": "^5.9.0"
+  }
+}
