@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "opencode-kube-context",
-  "version": "0.1.1",
-  "description": "Live kubectl context in your OpenCode TUI footer \u2014 colour-coded for prod and staging.",
+  "version": "0.2.0",
+  "description": "Live kubectl context in your OpenCode TUI footer — colour-coded for prod and staging.",
   "type": "module",
   "license": "Apache-2.0",
   "author": "Sebastiaan Kok",
