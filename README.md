@@ -1,7 +1,7 @@
 # opencode-kube-context
 
-Know which Kubernetes cluster your agent is pointed at. A `⎈` badge for the active
-kubectl context, in the OpenCode TUI footer, updated the moment you switch.
+Know where kubectl points by default. A `⎈` badge for the active kubectl context in the
+OpenCode TUI footer, updated the moment you switch.
 
 ```
 ⎈ prod-eu-west-1
