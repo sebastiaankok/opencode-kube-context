@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "opencode-kube-context",
-  "version": "0.1.1",
-  "description": "Live kubectl context in your OpenCode TUI footer \u2014 colour-coded for prod and staging.",
+  "version": "0.2.0",
+  "description": "Live kubectl context in your OpenCode TUI footer — colour-coded for prod and staging.",
   "type": "module",
   "license": "Apache-2.0",
   "author": "Sebastiaan Kok",
@@ -31,8 +31,9 @@
   ],
   "scripts": {
     "build": "bun scripts/build.ts",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "prepack": "bun run build && npm run typecheck",
+    "prepack": "bun test && bun run build && npm run typecheck",
     "pack:dry": "npm pack --dry-run"
   },
   "peerDependencies": {
