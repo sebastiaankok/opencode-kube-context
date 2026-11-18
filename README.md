@@ -39,7 +39,8 @@ Or add it by hand:
 ```
 
 Because it is a CLI-side plugin, it also works when the TUI talks to a remote OpenCode
-server.
+server. The badge describes the machine running the TUI; see [Limitations](#limitations) for
+what that does and does not tell you.
 
 ## Usage
 
@@ -56,6 +57,13 @@ cluster name, and names longer than 36 characters are middle-truncated.
 
 ## Limitations
 
+- The badge shows the **default kubectl context for processes that inherit the TUI's
+  environment**. It is informational, not a guardrail: any command can override it with
+  `--context`, run under a different `KUBECONFIG`, or bypass kubectl entirely through cloud
+  credentials or direct API access. A muted badge does not mean production is out of reach, and
+  a red one is not an access control.
+- In a **remote-server setup**, tool calls run on the server, not on the machine running the
+  TUI. The badge reads the TUI's kubeconfig, so it may not be the context those commands use.
 - It reads the kubeconfig, so it cannot see a `--context` flag passed to a single `kubectl`
   call, or credentials resolved by an auth plugin.
 - Context switching is left to `kubectl` on purpose: the plugin only observes.
