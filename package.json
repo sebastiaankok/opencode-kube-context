@@ -31,8 +31,9 @@
   ],
   "scripts": {
     "build": "bun scripts/build.ts",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "prepack": "bun run build && npm run typecheck",
+    "prepack": "bun test && bun run build && npm run typecheck",
     "pack:dry": "npm pack --dry-run"
   },
   "peerDependencies": {

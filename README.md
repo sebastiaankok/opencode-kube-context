@@ -1,18 +1,19 @@
 # opencode-kube-context
 
-Know where kubectl points by default. A `⎈` badge for the active kubectl context in the
-OpenCode TUI footer, updated the moment you switch.
+Know where kubectl points by default. A `⎈` badge for the active kubectl context and namespace
+in the OpenCode TUI footer, updated the moment you switch.
 
 ```
-⎈ prod-eu-west-1
+⎈ prod-eu-west-1:kube-system
 ```
 
-- **Footer badge** in the session prompt footer and on the home screen.
+- **Footer badge** in the session prompt footer and on the home screen, showing the active
+  context and its default namespace.
 - **Colour-coded**: red for `prod` / `production` / `prd`, yellow for `stg` / `stage` /
   `staging` / `preprod` / `uat`, muted otherwise.
-- **Live**: follows your kubeconfig, so `kubectl config use-context …` (or `kubectx`) shows
-  up without restarting OpenCode.
-- **`/kube`**: a palette and slash command that shows the full context and which
+- **Live**: follows your kubeconfig, so `kubectl config use-context …` (or `kubectx`) and
+  `kubectl config set-context --current --namespace …` show up without restarting OpenCode.
+- **`/kube`**: a palette and slash command that shows the full context, namespace, and which
   kubeconfig file it came from.
 - **Read-only**: it never writes to your kubeconfig, and it does not need `kubectl` on
   `PATH`. It parses the same files kubectl does: `$KUBECONFIG` (in order) or
@@ -49,23 +50,25 @@ kubeconfig, it stays hidden.
 
 | Command | What it does |
 | --- | --- |
-| `/kube` | Shows the current context and the kubeconfig file it was read from |
+| `/kube` | Shows the current context, namespace, and the kubeconfig file it was read from |
 | `Kubernetes: kubectl context` | Same command, in the command palette |
 
 Long names are shortened for the footer: EKS ARNs (`arn:aws:eks:…:cluster/name`) show the
-cluster name, and names longer than 36 characters are middle-truncated.
+cluster name, contexts longer than 36 characters and namespaces longer than 24 characters are
+middle-truncated.
 
 ## Limitations
 
-- The badge shows the **default kubectl context for processes that inherit the TUI's
-  environment**. It is informational, not a guardrail: any command can override it with
-  `--context`, run under a different `KUBECONFIG`, or bypass kubectl entirely through cloud
-  credentials or direct API access. A muted badge does not mean production is out of reach, and
-  a red one is not an access control.
+- The badge shows the **default kubectl context and namespace for processes that inherit the
+  TUI's environment**. It is informational, not a guardrail: any command can override it with
+  `--context`, `-n`/`--namespace`, run under a different `KUBECONFIG`, or bypass kubectl
+  entirely through cloud credentials or direct API access. A muted badge does not mean
+  production is out of reach, and a red one is not an access control.
 - In a **remote-server setup**, tool calls run on the server, not on the machine running the
   TUI. The badge reads the TUI's kubeconfig, so it may not be the context those commands use.
-- It reads the kubeconfig, so it cannot see a `--context` flag passed to a single `kubectl`
-  call, or credentials resolved by an auth plugin.
+- It reads the kubeconfig, so it cannot see a `--context` or `-n`/`--namespace` flag passed to
+  a single `kubectl` call, or credentials resolved by an auth plugin. The namespace shown is
+  the context's default (`default` when the context does not set one).
 - Context switching is left to `kubectl` on purpose: the plugin only observes.
 
 ## Development
@@ -78,6 +81,7 @@ module ids, so the plugin shares the host's signals and renderables.
 
 ```sh
 npm install
+npm test           # kubeconfig parsing and display helpers
 bun run build      # writes dist/tui.js
 npm run typecheck
 npm run pack:dry
