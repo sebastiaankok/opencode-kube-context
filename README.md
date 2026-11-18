@@ -62,11 +62,15 @@ cluster name, and names longer than 36 characters are middle-truncated.
 
 ## Development
 
-The TUI part is shipped as TypeScript (`src/tui.tsx`) and compiled by OpenCode's plugin
-loader, so there is no build step.
+The published `./tui` entrypoint is `dist/tui.js`. It has to be prebuilt: OpenCode skips the
+host's Solid source transform for packages inside `node_modules`, so shipping raw `.tsx` would
+compile JSX against React. `scripts/build.ts` compiles the Solid JSX and rewrites the imports
+the host already owns (`@opencode/plugin/tui`, `@opentui/*`, `solid-js`) to the host's runtime
+module ids, so the plugin shares the host's signals and renderables.
 
 ```sh
 npm install
+bun run build      # writes dist/tui.js
 npm run typecheck
 npm run pack:dry
 ```
@@ -74,6 +78,7 @@ npm run pack:dry
 To try a checkout locally, point OpenCode at it instead of installing:
 
 ```sh
+bun run build
 ln -s "$PWD" ~/.config/opencode/plugins/kube-context
 ```
 
