@@ -7,16 +7,17 @@
  */
 import { Show, createSignal } from "solid-js"
 import { Plugin } from "@opencode/plugin/tui"
+import type { RGBA } from "@opentui/core"
 import {
   clean,
   display,
   displayNamespace,
   kubeconfigFiles,
   readContext,
-  tone,
   watchFiles,
   type Snapshot,
 } from "./kube"
+import { resolveColor } from "./colors"
 
 const GLYPH = "\u2388"
 
@@ -32,17 +33,37 @@ export default Plugin.define({
       })
     })
 
+    const hue = (name: string): RGBA => {
+      const scale = (context.theme.hue as unknown as Record<string, Record<number, RGBA>>)[name]
+      return scale?.[context.themeMode === "dark" ? 300 : 700] ?? context.theme.text.muted
+    }
+
+    const painted = (color: string): string | RGBA => {
+      switch (color) {
+        case "red":
+          return context.theme.text.feedback.error.base
+        case "yellow":
+          return context.theme.text.feedback.warning.base
+        case "green":
+          return context.theme.text.feedback.success.base
+        case "blue":
+          return context.theme.text.feedback.info.base
+        case "muted":
+          return context.theme.text.muted
+        case "orange":
+        case "purple":
+        case "cyan":
+        case "gray":
+          return hue(color)
+        default:
+          return color
+      }
+    }
+
     const color = () => {
       const snapshot = current()
       if (!snapshot) return context.theme.text.muted
-      switch (tone(snapshot.context)) {
-        case "danger":
-          return context.theme.text.feedback.error.base
-        case "warning":
-          return context.theme.text.feedback.warning.base
-        default:
-          return context.theme.text.muted
-      }
+      return painted(resolveColor(snapshot.context, context.options).color)
     }
 
     function Badge() {
@@ -73,16 +94,29 @@ export default Plugin.define({
           slash: { name: "kube" },
           run: async () => {
             const snapshot = await readContext()
+            if (!snapshot) {
+              await context.ui.dialog.alert({
+                title: "kubectl context",
+                message: `No current context set.\n\nChecked: ${kubeconfigFiles().map(clean).join(", ")}`,
+              })
+              return
+            }
+
+            const match = resolveColor(snapshot.context, context.options)
+            const origin = match.rule ? `rule: ${clean(match.rule)}` : match.color === "muted" ? "default" : "built-in"
+            const ignored =
+              match.ignored.length > 0 ? ["", `ignored: ${match.ignored.map(clean).join(", ")}`] : []
+
             await context.ui.dialog.alert({
               title: "kubectl context",
-              message: snapshot
-                ? [
-                    `context: ${clean(snapshot.context)}`,
-                    `namespace: ${clean(snapshot.namespace)}`,
-                    "",
-                    `kubeconfig: ${clean(snapshot.source)}`,
-                  ].join("\n")
-                : `No current context set.\n\nChecked: ${kubeconfigFiles().map(clean).join(", ")}`,
+              message: [
+                `context: ${clean(snapshot.context)}`,
+                `namespace: ${clean(snapshot.namespace)}`,
+                `colour: ${clean(match.color)} (${origin})`,
+                "",
+                `kubeconfig: ${clean(snapshot.source)}`,
+                ...ignored,
+              ].join("\n"),
             })
           },
         },
